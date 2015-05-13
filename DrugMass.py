@@ -113,11 +113,12 @@ def main():
     ms_file = tkFileDialog.askopenfilename()
     #ms_file   = "./Data/CCG224144MIDSample5minMS2.mzML"
     #ms_file   = "./Data/CCG224144MIDSample5min.mzML"
-    exspec = ExtractSpec(ms_file)
     #mass_list = [423.3, 268.2]
     mass_list = [439, 421, 312.2, 252, 170.8]
+    retention_time = [0, 10]
+    exspec = ExtractSpec(ms_file)
     run = pymzml.run.Reader(ms_file, noiseThreshold = 100)
-    SlidingWindow(mass_list, run, exspec)
+    SlidingWindow(mass_list, run, exspec, retention_time)
 
 if __name__ == "__main__":
     main()

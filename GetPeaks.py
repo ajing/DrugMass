@@ -4,9 +4,20 @@
 
 import pymzml
 import Tkinter, tkFileDialog
-from Common import InRange
 
 DEBUG = False
+
+def InRange(spec, rtrange):
+    try:
+        rt_time = spec["scan time"]
+        if not rtrange is None:
+            if rt_time < rtrange[0]:
+                return False
+            elif rt_time > rtrange[1]:
+                return False
+    except:
+        return False
+    return rt_time
 
 def HighestPeaks(peaklist):
     max_item= (0,0)
@@ -48,5 +59,5 @@ if __name__ == "__main__":
     root.withdraw()
     inputfile = tkFileDialog.askopenfilename()
     run = pymzml.run.Reader(inputfile, noiseThreshold = 100)
-    #PlotRange(run, 5.681)
-    PlotRange(run, 6.38)
+    PlotRange(run, 5.681)
+    #PlotRange(run, 6.38)

@@ -13,8 +13,8 @@ def DrugFragMass(masslist, i):
         for example if masslist = [439, 421, 312.2, 252, 170.8], i = 2
         result is [455, 437, 312.2, 252, 170.8]
     '''
-    mass_list_mod = list(masslist)
-    for j in range(i):
+    mass_list_mod = sorted(list(masslist), reverse = True)
+    for j in range(i + 1):
         mass_list_mod[j] = mass_list_mod[j] + 16
     return mass_list_mod
 
@@ -48,20 +48,28 @@ def SpecSumIntensity4MassList(mzlist, rt_time, exspec):
     return GetSumIntensityInOneSpec(mzlist, spec)
 
 def main():
-    root = Tkinter.Tk()
-    root.withdraw()
+    #root = Tkinter.Tk()
+    #root.withdraw()
     #ms_file = tkFileDialog.askopenfilename()
     ms_file   = "./Data/CCG224144MIDSample5minMS2.mzML"
-    mass_list = [439, 421, 312.2, 252, 170.8]
+    ms_file   = "./Data/CCG224144MIDSample5min.mzML"
+    ms_file   = "./Data/5minMRM_Biotrans.mzML"
+    mass_list = [423, 405, 296, 268, 171]  #  only for parent drug
+    #mass_list = [439, 421, 312.2, 252, 170.8]
     exspec = ExtractSpec(ms_file)
     run = pymzml.run.Reader(ms_file, noiseThreshold = 100)
-    intensity_1 = SpecSumIntensity4MassList(mass_list, 5.83, exspec)
-    print 5.83, intensity_1
-    intensity_1 = SpecSumIntensity4MassList(mass_list, 5.681, exspec)
-    print 5.681, intensity_1
+    #intensity_1 = SpecSumIntensity4MassList(mass_list, 5.83, exspec)
+    #print 5.83, intensity_1
+    for i in range(len(mass_list)):
+        mass_list_mod = DrugFragMass(mass_list, i)
+        #intensity_1 = SpecSumIntensity4MassList(mass_list_mod, 5.83, exspec)
+        #print 5.83, mass_list_mod, intensity_1
+        intensity_1 = SpecSumIntensity4MassList(mass_list_mod, 5.681, exspec)
+        print 5.681, mass_list_mod, intensity_1
 
 if __name__ == "__main__":
     #mass_list = [439, 421, 312.2, 252, 170.8]
     #print DrugFragMass(mass_list, 2)
+    mass_list = [423, 405, 296, 268, 171]
     main()
 

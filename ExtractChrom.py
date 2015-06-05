@@ -5,10 +5,11 @@
 import pymzml
 
 class SpecBasic:
-    def __init__(self, rt, index):
+    def __init__(self, rt, index, mslevel = 1):
         # here the program assume the retention time is a float number
         self._rt   = float(rt)
         self._idx  = index
+        mslevel    = 1
         self._spec = dict()
 
     @property
@@ -84,12 +85,12 @@ class ExtractSpec:
         # first spec flag
         flag_f = 1
         for spectrum in run:
-            if spectrum['ms level'] == 1:
+            if spectrum['ms level'] == 2:
                 if flag_f:
                     self.start_time = spectrum["scan time"]
                     flag_f = 0
                 #print max(spectrum.i), min(spectrum.i)
-                #print spectrum['scan time']
+                print spectrum['scan time']
                 specbasic = SpecBasic(spectrum['scan time'], spectrum['id'])
                 specbasic.spec["peaks"] = spectrum.peaks
                 specbasic.spec["scan time"] = spectrum['scan time']

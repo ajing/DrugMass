@@ -33,9 +33,14 @@ def PlotRange(run, rt_time):
     p = pymzml.plot.Factory()
     n = 0
     for spec in run:
-        if spec['ms level'] != 1:
+        #print spec['ms level']
+        #if spec['ms level'] != 1:
+        #    continue
+        try:
+            print spec["scan time"], abs(spec["scan time"] - rt_time)
+        except:
+            print "cannot find scan time.."
             continue
-        print spec["scan time"], abs(spec["scan time"] - rt_time)
         if abs(spec["scan time"] - rt_time) > 0.003:
             continue
         n = n + 1
@@ -44,7 +49,7 @@ def PlotRange(run, rt_time):
         p.add(spec.peaks, color=(200,00,00), style='circles')
         p.add(spec.centroidedPeaks, color=(00,00,00), style='sticks')
         p.add(spec.reprofiledPeaks, color=(00,255,00), style='circles')
-        p.save( filename="output/plotAspect_%s.xhtml" %(n))
+        p.save( filename="output/%s_%s.xhtml" %(rt_time, n))
 
 def Test():
     filename = "E165ug.mzML"
@@ -59,6 +64,7 @@ if __name__ == "__main__":
     root.withdraw()
     inputfile = tkFileDialog.askopenfilename()
     run = pymzml.run.Reader(inputfile, noiseThreshold = 100)
-    #PlotRange(run, 5.681)
-    PlotRange(run, 5.83)
+    PlotRange(run, 5.681)
+    #run = pymzml.run.Reader(inputfile, noiseThreshold = 100)
+    #PlotRange(run, 5.83)
     #PlotRange(run, 6.38)

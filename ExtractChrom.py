@@ -90,7 +90,7 @@ class ExtractSpec:
                     self.start_time = spectrum["scan time"]
                     flag_f = 0
                 #print max(spectrum.i), min(spectrum.i)
-                print spectrum['scan time']
+                #print spectrum['scan time']
                 specbasic = SpecBasic(spectrum['scan time'], spectrum['id'])
                 specbasic.spec["peaks"] = spectrum.peaks
                 specbasic.spec["scan time"] = spectrum['scan time']

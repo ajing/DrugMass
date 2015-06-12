@@ -70,7 +70,7 @@ def main():
     # initialize abund_dict
     for i in range(len(mass_list)):
         mass_list_mod = DrugFragMass(mass_list, i)
-        abund_dict[tuple(mass_list_mod)] = {"abundance": 0, "rt_time": 0}
+        abund_dict[tuple(mass_list_mod)] = {"abundance": 0, "rt_time": 0, "intensity": 0}
     for rt_time in DRange(exspec.start_time, exspec.end_time, exspec.interval):
         ## ignore the spec out of rtrange
         #if (not rtrange is None) and (rt_time < min(rtrange) or rt_time > max(rtrange)):
@@ -81,8 +81,9 @@ def main():
                 intensity_1, abundance_1 = SpecSumIntensity4MassList(mass_list_mod, rt_time, exspec)
             except Exception, e:
                 print e
-            if abundance_1 > abund_dict[tuple(mass_list_mod)]["abundance"]:
-                abund_dict[tuple(mass_list_mod)] = {"abundance": abundance_1, "rt_time": rt_time}
+            if intensity_1 > abund_dict[tuple(mass_list_mod)]["intensity"]:
+            #if abundance_1 > abund_dict[tuple(mass_list_mod)]["abundance"]:
+                abund_dict[tuple(mass_list_mod)] = {"abundance": abundance_1, "rt_time": rt_time, "intensity": intensity_1}
     print abund_dict
 
 if __name__ == "__main__":

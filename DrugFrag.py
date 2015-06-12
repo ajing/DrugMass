@@ -7,6 +7,7 @@ from DrugMass import HighestPeaks, SelectPeaks
 import pymzml
 import Tkinter, tkFileDialog
 
+
 def DrugFragMass(masslist, i):
     '''
         The function sort masslist first and then add mass for each element before index i
@@ -25,6 +26,7 @@ def GetSumIntensityInOneSpec(mz_list, one_spec, tolerance = 0.2):
     print_list = []
     max_int_dict = dict()
     spec = one_spec.spec
+    mz, max_int = HighestPeaks(spec["peaks"])
     for eachmz in mz_list:
         eachrange = (eachmz - tolerance, eachmz + tolerance)
         try:
@@ -32,9 +34,10 @@ def GetSumIntensityInOneSpec(mz_list, one_spec, tolerance = 0.2):
         except Exception as e:
             #print e.message
             continue
-        max_int_dict[eachmz] = {"max_int": intensity, "max_mz": mz, "max_time": spec["scan time"], "max_id": spec["id"]}
+        max_int_dict[eachmz] = {"max_int": intensity, "max_mz": mz, "max_time": spec["scan time"], "max_id": spec["id"], "max_abundance": intensity / max_int}
     sum_intensity = sum([value["max_int"] for key, value in max_int_dict.iteritems()])
-    return sum_intensity
+    sum_abundance = sum([value["max_abundance"] for key, value in max_int_dict.iteritems()])
+    return sum_intensity, sum_abundance
 
 def SpecSumIntensity4MassList(mzlist, rt_time, exspec):
     specs = exspec.extractWithTime(rt_time)
@@ -64,8 +67,8 @@ def main():
         mass_list_mod = DrugFragMass(mass_list, i)
         #intensity_1 = SpecSumIntensity4MassList(mass_list_mod, 5.83, exspec)
         #print 5.83, mass_list_mod, intensity_1
-        intensity_1 = SpecSumIntensity4MassList(mass_list_mod, 5.681, exspec)
-        print 5.681, mass_list_mod, intensity_1
+        intensity_1, abundance_1 = SpecSumIntensity4MassList(mass_list_mod, 5.681, exspec)
+        print 5.681, mass_list_mod, intensity_1, abundance_1
 
 if __name__ == "__main__":
     #mass_list = [439, 421, 312.2, 252, 170.8]

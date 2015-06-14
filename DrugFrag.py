@@ -6,6 +6,7 @@ from ExtractChrom import ExtractSpec
 from DrugMass import HighestPeaks, SelectPeaks, DRange
 import pymzml
 import Tkinter, tkFileDialog
+import pprint
 
 
 def DrugFragMass(masslist, i):
@@ -19,7 +20,7 @@ def DrugFragMass(masslist, i):
         mass_list_mod[j] = mass_list_mod[j] + 16
     return mass_list_mod
 
-def GetSumIntensityInOneSpec(mz_list, one_spec, tolerance = 0.2):
+def GetSumIntensityInOneSpec(mz_list, one_spec, tolerance = 0.25):
     '''
         Get the sum intensity for one spectrum for a list of mz in a collection of specs
     '''
@@ -35,9 +36,10 @@ def GetSumIntensityInOneSpec(mz_list, one_spec, tolerance = 0.2):
             #print e.message
             continue
         max_int_dict[eachmz] = {"max_int": intensity, "max_mz": mz, "max_time": spec["scan time"], "max_id": spec["id"], "max_abundance": intensity / max_int}
+    #pprint.pprint(max_int_dict)
     sum_intensity = sum([value["max_int"] for key, value in max_int_dict.iteritems()])
     sum_abundance = sum([value["max_abundance"] for key, value in max_int_dict.iteritems()])
-    return sum_intensity, sum_abundance
+    return sum_intensity, sum_abundance, spec["scan time"]
 
 def SpecSumIntensity4MassList(mzlist, rt_time, exspec):
     specs = exspec.extractWithTime(rt_time)
@@ -78,15 +80,36 @@ def main():
         for i in range(len(mass_list)):
             mass_list_mod = DrugFragMass(mass_list, i)
             try:
-                intensity_1, abundance_1 = SpecSumIntensity4MassList(mass_list_mod, rt_time, exspec)
+                intensity_1, abundance_1, scan_time = SpecSumIntensity4MassList(mass_list_mod, rt_time, exspec)
             except Exception, e:
                 print e
             if intensity_1 > abund_dict[tuple(mass_list_mod)]["intensity"]:
             #if abundance_1 > abund_dict[tuple(mass_list_mod)]["abundance"]:
-                abund_dict[tuple(mass_list_mod)] = {"abundance": abundance_1, "rt_time": rt_time, "intensity": intensity_1}
+                abund_dict[tuple(mass_list_mod)] = {"abundance": abundance_1, "rt_time": scan_time, "intensity": intensity_1}
     print abund_dict
+
+def single_time(rt_time):
+    #ms_file   = "./Data/CCG224144MIDSample5minMS2.mzML"
+    #ms_file   = "./Data/CCG224144MIDSample5min.mzML"
+    ms_file   = "./Data/5minMRM_Biotrans.mzML"
+    mass_list = [423, 405, 296, 268, 171]  #  only for parent drug
+    exspec = ExtractSpec(ms_file)
+    run = pymzml.run.Reader(ms_file, noiseThreshold = 100)
+    abund_dict = dict()
+    # initialize abund_dict
+    for i in range(len(mass_list)):
+        mass_list_mod = DrugFragMass(mass_list, i)
+        try:
+            intensity_1, abundance_1, scan_time = SpecSumIntensity4MassList(mass_list_mod, rt_time, exspec)
+        except Exception, e:
+            print e
+        abund_dict[tuple(mass_list_mod)] = {"abundance": abundance_1, "rt_time": scan_time, "intensity": intensity_1}
+    print abund_dict
+
 
 if __name__ == "__main__":
     mass_list = [423, 405, 296, 268, 171]
     main()
+    single_time(5.681)
+    #single_time(7.373)
 

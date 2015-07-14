@@ -7,6 +7,7 @@ from DrugMass import HighestPeaks, SelectPeaks, DRange
 import pymzml
 import Tkinter, tkFileDialog
 import pprint
+import string
 
 
 def DrugFragMass(masslist, i):
@@ -17,10 +18,11 @@ def DrugFragMass(masslist, i):
     '''
     mass_list_mod = sorted(list(masslist), reverse = True)
     for j in range(i + 1):
-        mass_list_mod[j] = mass_list_mod[j] + 16
+        #mass_list_mod[j] = mass_list_mod[j] + 16
+        mass_list_mod[j] = mass_list_mod[j] - 2
     return mass_list_mod
 
-def GetSumIntensityInOneSpec(mz_list, one_spec, tolerance = 0.25):
+def GetSumIntensityInOneSpec(mz_list, one_spec, tolerance = 0.11):
     '''
         Get the sum intensity for one spectrum for a list of mz in a collection of specs
     '''
@@ -58,6 +60,15 @@ def SpecSumIntensity4MassList(mzlist, rt_time, exspec):
         spec  = specs[0]
     return GetSumIntensityInOneSpec(mzlist, spec)
 
+def MetCandidate(i, n, mod_part):
+    uppercase = string.ascii_uppercase
+    mod_part_p= "(" + mod_part + ")"
+    molecule  = uppercase[:n]
+    molecule  = list(molecule)
+    molecule[i] = molecule[i] + mod_part_p
+    print molecule
+    return "-".join(molecule)
+
 def main():
     #root = Tkinter.Tk()
     #root.withdraw()
@@ -86,30 +97,33 @@ def main():
             if intensity_1 > abund_dict[tuple(mass_list_mod)]["intensity"]:
             #if abundance_1 > abund_dict[tuple(mass_list_mod)]["abundance"]:
                 abund_dict[tuple(mass_list_mod)] = {"abundance": abundance_1, "rt_time": scan_time, "intensity": intensity_1}
-    print abund_dict
+    pprint.pprint(abund_dict)
 
-def single_time(rt_time):
+def single_time(rt_time, modtype):
     #ms_file   = "./Data/CCG224144MIDSample5minMS2.mzML"
     #ms_file   = "./Data/CCG224144MIDSample5min.mzML"
     ms_file   = "./Data/5minMRM_Biotrans.mzML"
     mass_list = [423, 405, 296, 268, 171]  #  only for parent drug
     exspec = ExtractSpec(ms_file)
     run = pymzml.run.Reader(ms_file, noiseThreshold = 100)
-    abund_dict = dict()
     # initialize abund_dict
+    abund_dict = dict()
     for i in range(len(mass_list)):
         mass_list_mod = DrugFragMass(mass_list, i)
         try:
             intensity_1, abundance_1, scan_time = SpecSumIntensity4MassList(mass_list_mod, rt_time, exspec)
         except Exception, e:
             print e
-        abund_dict[tuple(mass_list_mod)] = {"abundance": abundance_1, "rt_time": scan_time, "intensity": intensity_1}
-    print abund_dict
+        abund_dict[tuple(mass_list_mod)] = {"abundance": abundance_1, "meta_cand": MetCandidate(i, len(mass_list), modtype), "rt_time": scan_time, "intensity": intensity_1}
+    #print abund_dict
+    pprint.pprint(abund_dict)
 
 
 if __name__ == "__main__":
     mass_list = [423, 405, 296, 268, 171]
-    main()
-    single_time(5.681)
+    #main()
+    #single_time(5.681)
+    modtype = "-2H"
+    single_time(5.83, modtype)
     #single_time(7.373)
 

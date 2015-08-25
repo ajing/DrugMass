@@ -72,26 +72,6 @@ def MetCandidate(i, n, mod_part):
     molecule[i] = molecule[i] + mod_part_p
     return "-".join(molecule)
 
-def main():
-    root = Tkinter.Tk()
-    root.withdraw()
-    ms_file = tkFileDialog.askopenfilename()
-    #ms_file   = "./Data/CCG224144MIDSample5minMS2.mzML"
-    #ms_file   = "./Data/CCG224144MIDSample5min.mzML"
-    #ms_file   = "./Data/5minMRM_Biotrans.mzML"
-    mass_list = [423, 405, 296, 268, 171]  #  only for parent drug
-    exspec = ExtractSpec(ms_file)
-    run = pymzml.run.Reader(ms_file, noiseThreshold = 100)
-
-    mod_dict  = ParseModShift(MOD_FILE)
-    print mod_dict
-    mass_list = [423, 296, 268, 171]  #  only for parent drug
-
-    for mod in mod_dict:
-        mass_shift = float(mod_dict[mod]["MassShift"])
-        time_set   = float(mod_dict[mod]["RetentionTime"])
-        RunForEachMod(mass_list, mod, mass_shift, exspec, time_set)
-
 def ParseModShift(filename):
     mod_dict = dict()
     for line in DictReader(open(filename), delimiter = " "):
@@ -119,32 +99,23 @@ def RunForEachMod(mass_list, mod_type, mod_val, exspec, time_set):
                 abund_dict[tuple(mass_list_mod)] = {"abundance": sum_abundance, "meta_cand": MetCandidate(i, len(mass_list), mod_type), "rt_time": scan_time, "intensity": sum_intensity}
     pprint.pprint(abund_dict)
 
-
-def single_time(rt_time, modtype):
-    #ms_file   = "./Data/CCG224144MIDSample5minMS2.mzML"
-    #ms_file   = "./Data/CCG224144MIDSample5min.mzML"
+def main():
+    #root = Tkinter.Tk()
+    #root.withdraw()
+    #ms_file = tkFileDialog.askopenfilename()
     ms_file   = "./Data/5minMRM_Biotrans.mzML"
+    mass_list = [423, 405, 296, 268, 171]  #  only for parent drug
+    exspec = ExtractSpec(ms_file)
+    run = pymzml.run.Reader(ms_file, noiseThreshold = 100)
 
-#    root = Tkinter.Tk()
-#    root.withdraw()
-#    ms_file = tkFileDialog.askopenfilename()
-    # initialize abund_dict
-    abund_dict = dict()
-    for i in range(len(mass_list)):
-        mass_list_mod = DrugFragMass(mass_list, i, mod_val)
-        try:
-            intensity_1, abundance_1, scan_time = SpecSumIntensity4MassList(mass_list_mod, rt_time, exspec)
-        except Exception, e:
-            print e
-        abund_dict[tuple(mass_list_mod)] = {"abundance": abundance_1, "meta_cand": MetCandidate(i, len(mass_list), modtype), "rt_time": scan_time, "intensity": intensity_1}
-    #print abund_dict
-    pprint.pprint(abund_dict)
+    mod_dict  = ParseModShift(MOD_FILE)
+    print mod_dict
+    mass_list = [423, 296, 268, 171]  #  only for parent drug
 
+    for mod in mod_dict:
+        mass_shift = float(mod_dict[mod]["MassShift"])
+        time_set   = float(mod_dict[mod]["RetentionTime"])
+        RunForEachMod(mass_list, mod, mass_shift, exspec, time_set)
 
 if __name__ == "__main__":
     main()
-    #single_time(5.681)
-    #modtype = "-2H"
-    #single_time(5.83, modtype)
-    #single_time(7.373)
-

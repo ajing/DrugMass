@@ -26,7 +26,7 @@ def DrugFragMass(masslist, i, mod_value):
         mass_list_mod[j] = mass_list_mod[j] + mod_value
     return mass_list_mod
 
-def GetSumIntensityInOneSpec(mz_list, one_spec, tolerance = 0.3):
+def GetSumIntensityInOneSpec(mz_list, one_spec, tolerance = 0.11):
     '''
         Get the sum intensity for one spectrum for a list of mz in a collection of specs
     '''

@@ -73,12 +73,12 @@ def MetCandidate(i, n, mod_part):
     return "-".join(molecule)
 
 def main():
-    #root = Tkinter.Tk()
-    #root.withdraw()
-    #ms_file = tkFileDialog.askopenfilename()
-    ms_file   = "./Data/CCG224144MIDSample5minMS2.mzML"
-    ms_file   = "./Data/CCG224144MIDSample5min.mzML"
-    ms_file   = "./Data/5minMRM_Biotrans.mzML"
+    root = Tkinter.Tk()
+    root.withdraw()
+    ms_file = tkFileDialog.askopenfilename()
+    #ms_file   = "./Data/CCG224144MIDSample5minMS2.mzML"
+    #ms_file   = "./Data/CCG224144MIDSample5min.mzML"
+    #ms_file   = "./Data/5minMRM_Biotrans.mzML"
     mass_list = [423, 405, 296, 268, 171]  #  only for parent drug
     exspec = ExtractSpec(ms_file)
     run = pymzml.run.Reader(ms_file, noiseThreshold = 100)

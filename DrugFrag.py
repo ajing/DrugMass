@@ -141,12 +141,6 @@ def single_time(rt_time, modtype):
     pprint.pprint(abund_dict)
 
 
-
-    exspec = ExtractSpec(ms_file)
-    run = pymzml.run.Reader(ms_file, noiseThreshold = 100)
-
-
-
 if __name__ == "__main__":
     main()
     #single_time(5.681)
